@@ -7,33 +7,31 @@ splitinspace()
 		echo $a
 	done
 }
-
-allline=`grep "THIS IS IPTABLE WLAN0"\!\!\! /var/log/kern.log`
-nowline=`echo "$allline" | tail -n 1`
-nowcont=`echo "$allline" | wc -l`
-maxcont=$nowcont
+ 
+nowcont="`wc -l < /var/log/iptableswlan0`"
 while :
 do
-	allline=`grep "THIS IS IPTABLE WLAN0"\!\!\! /var/log/kern.log`
+	allline=`cat /var/log/iptableswlan0`
 	maxcont=`echo "$allline" | wc -l`
-
+	
 	if [ "$(($maxcont - $nowcont))" -lt 0 ] 
 	then
 		for a in $(seq 1 1 $($maxcont))
 		do
-			sip=`echo "$allline" | tac | sed -n ${a}p | splitinspace | grep SRC | cut -c 5-`
-			mac=`echo "$allline" | tac | sed -n ${a}p | splitinspace | grep MAC | cut -c 23-39 | tr [:lower:] [:upper:]`
+			sip=`echo "$allline" | sed -n ${a}p | splitinspace | grep SRC | cut -c 5-`
+			mac=`echo "$allline" | sed -n ${a}p | splitinspace | grep MAC | cut -c 23-39 | tr [:lower:] [:upper:]`
 			if [ "`grep $sip,$mac /etc/wifiloginserver/allowlist`" == "" ]
 			then
 				echo "$sip,$mac" >> /etc/wifiloginserver/allowlist
 			fi
 		done
-		#echo dead
 	else
-		for a in $(seq $(($maxcont - $nowcont)) -1 1)
+		(( nowcont++ ))
+
+		for a in $(seq $nowcont 1 $maxcont)
 		do
-			sip=`echo "$allline" | tac | sed -n ${a}p | splitinspace | grep SRC | cut -c 5-`
-			mac=`echo "$allline" | tac | sed -n ${a}p | splitinspace | grep MAC | cut -c 23-39 | tr [:lower:] [:upper:]`
+			sip=`echo "$allline" | sed -n ${a}p | splitinspace | grep SRC | cut -c 5-`
+			mac=`echo "$allline" | sed -n ${a}p | splitinspace | grep MAC | cut -c 23-39 | tr [:lower:] [:upper:]`
 			if [ "`grep $sip,$mac /etc/wifiloginserver/allowlist`" == "" ]
 			then
 				echo "$sip,$mac" >> /etc/wifiloginserver/allowlist
