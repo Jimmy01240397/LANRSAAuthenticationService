@@ -4,7 +4,7 @@ It is a web site for Wifi Authentication with RSA signature make by Debian 11. w
 
 ## Demo
 
-![image](https://user-images.githubusercontent.com/57281249/137624849-e8b3e06a-6c62-4eeb-adc9-6447e11f2be4.png)
+![image](https://user-images.githubusercontent.com/57281249/137624898-3a2d96b5-78d3-486d-a2ae-c88e2642bc50.png)
 
 ## Install
 
