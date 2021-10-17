@@ -1,0 +1,10 @@
+[Unit]
+Description=Start WifiAllowWeb
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/WifiRSAAuthenticationService
+ExecStart=/usr/bin/python3 wifiloginserver.py
+
+[Install]
+WantedBy=multi-user.target
