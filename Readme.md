@@ -15,7 +15,7 @@ git clone https://github.com/Jimmy01240397/WifiRSAAuthenticationService
 cd WifiRSAAuthenticationService
 ```
 
-2. move wifilogn dir to /var/www.
+2. move wifilogn dir to /var/www .
 
 ```bash
 mv wifilogin /var/www
@@ -63,7 +63,14 @@ cp key.key server.key
 mv wifiallowweb.service /lib/systemd/system/wifiallowweb.service
 ```
 
-11. enable and start your server
+11. install python packet.
+
+```bash
+pip install Flask
+pip install pycrypto
+```
+
+12. enable and start your server
 
 ```bash
 systemctl enable wifiallowweb.service

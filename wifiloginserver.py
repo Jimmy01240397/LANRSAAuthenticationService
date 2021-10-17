@@ -1,11 +1,7 @@
-import re
-import requests
 import os.path
 import os
-import csv
 import glob
 
-import threading
 import time
 
 from Crypto.PublicKey import RSA
