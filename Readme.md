@@ -42,21 +42,23 @@ iptables-restore rules.v4
 # to set up the rules
 ```
 
-6. set up iptables log config **remember fix your work dir in config (for me is /etc/WifiRSAAuthenticationService**
+6. **fix your work dir in wifiallowlist.sh and wifiallowremove.sh  (for me is /etc/WifiRSAAuthenticationService**
+7. set up iptables log config **remember fix your work dir in config (for me is /etc/WifiRSAAuthenticationService** and restart rsyslog
 
 ```bash
 mv iptableswlanlog.conf /etc/rsyslog.d/iptableswlanlog.conf
+/etc/init.d/rsyslog restart
 ```
 
-7. request your certificate from ca (or you can just use self signed certificate
-8. put your server certificate and server private in dir name to server.crt and server.key
+8. request your certificate from ca (or you can just use self signed certificate
+9. put your server certificate and server private in dir name to server.crt and server.key
 
 ```bash
 cp cert.crt server.crt
 cp key.key server.key
 ```
 
-9. **fix your work dir in wifiallowlist.sh and wifiallowremove.sh  (for me is /etc/WifiRSAAuthenticationService**
+
 10. move wifiallowweb.service to /lib/systemd/system/wifiallowweb.service **remember fix your work dir in wifiallowweb.service (for me is /etc/WifiRSAAuthenticationService**
 
 ```bash
