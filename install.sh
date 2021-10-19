@@ -57,6 +57,7 @@ then
 else
 	echo "os not support"
     exit 0
+fi
 
 find_python() {
 	set +e
