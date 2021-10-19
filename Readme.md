@@ -15,67 +15,40 @@ git clone https://github.com/Jimmy01240397/WifiRSAAuthenticationService
 cd WifiRSAAuthenticationService
 ```
 
-2. move wifilogn dir to /var/www .
+2. run install.sh
 
 ```bash
-mv wifilogin /var/www
+./install.sh
 ```
 
-3. make private and public key with openssl.
-
+3. request your certificate from ca (or you can just use self signed certificate
+4. put your server certificate and server private key in /etc/wifiloginserver name to server.crt and server.key
 ```bash
-openssl genrsa -out client-private.key 2048
-openssl rsa -in client-private.key -pubout -out client.pem
+cp cert.crt /etc/wifiloginserver/server.crt
+cp key.key /etc/wifiloginserver/server.key
 ```
 
-4. copy your public key to allowkey and send your private key to your mobile.
+
+
+5. make private and public key with openssl.
 
 ```bash
-cp client.pem allowkey/
+/etc/wifiloginserver/addnewuserkey.sh <username>
 ```
 
-5. set up iptables rules according to the file "rules.v4" 
+6. send your private key from /etc/wifiloginserver/private to your mobile.
+
+7. enable and start your server
 
 ```bash
-# or you can just 
-iptables-restore rules.v4
-# to set up the rules
-```
-
-6. set up iptables log config **remember fix your work dir in config (for me is /etc/WifiRSAAuthenticationService**
-
-```bash
-mv iptableswlanlog.conf /etc/rsyslog.d/iptableswlanlog.conf
-```
-
-7. request your certificate from ca (or you can just use self signed certificate
-8. put your server certificate and server private in dir name to server.crt and server.key
-
-```bash
-cp cert.crt server.crt
-cp key.key server.key
-```
-
-9. **fix your work dir in wifiallowlist.sh and wifiallowremove.sh  (for me is /etc/WifiRSAAuthenticationService**
-10. move wifiallowweb.service to /lib/systemd/system/wifiallowweb.service **remember fix your work dir in wifiallowweb.service (for me is /etc/WifiRSAAuthenticationService**
-
-```bash
-mv wifiallowweb.service /lib/systemd/system/wifiallowweb.service
-```
-
-11. install python packet.
-
-```bash
-pip install Flask
-pip install pycrypto
-```
-
-12. enable and start your server
-
-```bash
-systemctl enable wifiallowweb.service
-systemctl start wifiallowweb.service
+systemctl enable wifiallowweb@<wifiinterfacename>.service
+systemctl start wifiallowweb@<wifiinterfacename>.service
 
 #when you have add public key in allowkey remember to restart the server
-systemctl restart wifiallowweb.service
+systemctl restart wifiallowweb@<wifiinterfacename>.service
 ```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.

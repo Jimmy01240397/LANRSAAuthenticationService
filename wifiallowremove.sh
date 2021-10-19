@@ -1,6 +1,6 @@
 #!/bin/bash
 
-workdir="/etc/WifiRSAAuthenticationService"
+workdir="/etc/wifiloginserver"
 
 cont=`ipset list wifiallow | wc -l`
 for a in $(seq 9 1 $cont)

@@ -1,0 +1,12 @@
+[Unit]
+Description=Start WifiAllowWeb for %I
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/wifiloginserver
+ExecStart=/etc/wifiloginserver/wifiloginserver.sh %i
+ExecStop=/etc/wifiloginserver/stopwifiloginserver.sh %i
+
+
+[Install]
+WantedBy=multi-user.target

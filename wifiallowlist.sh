@@ -8,7 +8,7 @@ splitinspace()
 	done
 }
 
-workdir="/etc/WifiRSAAuthenticationService"
+workdir="/etc/wifiloginserver"
 
 sip=`echo "$1" | splitinspace | grep SRC | cut -c 5-`
 mac=`echo "$1" | splitinspace | grep MAC | cut -c 23-39 | tr [:lower:] [:upper:]`
