@@ -38,9 +38,12 @@ then
         exit 0
 fi
 
+myip=`ip a | grep wlan0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
+
 iptables -D INPUT -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
 iptables -D INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
 iptables -D INPUT -i $interface -m set ! --match-set wifiallow src,src -j DROP
 iptables -D FORWARD -i $interface -m set ! --match-set wifiallow src,src -j DROP
 iptables -D FORWARD -i $interface -m set --match-set wifiallow src,src -j LOG --log-prefix "THIS IS IPTABLE WLAN0!!!"
+iptables -D PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set wifiallow src,src -j DNAT --to $myip:443
 ipset destroy wifiallow
