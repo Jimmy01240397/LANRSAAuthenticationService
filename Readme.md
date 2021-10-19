@@ -1,6 +1,6 @@
 # WifiRSAAuthenticationService
 
-It is a web site for Wifi Authentication with RSA signature make by Debian 11. wifi hotspot is make by hostapt
+It is a web site for Wifi Authentication with RSA signature make by Debian 11. Wifi hotspot is make by hostapt.
 
 ## Demo
 
@@ -28,9 +28,7 @@ cp cert.crt /etc/wifiloginserver/server.crt
 cp key.key /etc/wifiloginserver/server.key
 ```
 
-
-
-5. make private and public key with openssl.
+5. make private and public key with addnewuserkey.sh.
 
 ```bash
 /etc/wifiloginserver/addnewuserkey.sh <username>
