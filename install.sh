@@ -85,6 +85,7 @@ sudo mkdir /etc/wifiloginserver 2> /dev/null
 sudo mkdir /etc/wifiloginserver/allowkey 2> /dev/null
 
 sudo cp -r {allowlist,addnewuserkey.sh,wifiallowlist.sh,wifiallowremove.sh,stopwifiloginserver.sh,wifiloginserver.sh,wifiloginserver.py} /etc/wifiloginserver/
+sudo chmod +x /etc/wifiloginserver/{addnewuserkey.sh,wifiallowlist.sh,wifiallowremove.sh,stopwifiloginserver.sh,wifiloginserver.sh}
 sudo cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/wifiloginserver/server.key
 sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/wifiloginserver/server.crt
 sudo cp iptableswlanlog.conf /etc/rsyslog.d/iptableswlanlog.conf

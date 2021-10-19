@@ -18,7 +18,7 @@ cd WifiRSAAuthenticationService
 2. run install.sh
 
 ```bash
-./install.sh
+sh install.sh
 ```
 
 3. request your certificate from ca (or you can just use self signed certificate
