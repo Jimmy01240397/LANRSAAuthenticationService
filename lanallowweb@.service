@@ -1,6 +1,7 @@
 [Unit]
 Description=Start LANAllowWeb for %I
 After=network.target
+OnFailure=lanallowweb-failure@%i.service
 
 [Service]
 WorkingDirectory=/etc/lanloginserver

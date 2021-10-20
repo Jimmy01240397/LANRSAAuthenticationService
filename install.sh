@@ -96,7 +96,7 @@ sudo mkdir /etc/lanloginserver 2> /dev/null
 sudo mkdir /etc/lanloginserver/allowkey 2> /dev/null
 set -e
 
-for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py requirements.txt
+for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py requirements.txt iptablessetuplist
 do
 	sudo cp -r $filename /etc/lanloginserver/
 done
@@ -110,6 +110,7 @@ sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/lanloginserver/server.crt
 sudo cp iptableslanlog.conf /etc/rsyslog.d/iptableslanlog.conf
 sudo cp iptableslancron /etc/cron.d/iptableslancron
 sudo cp lanallowweb@.service /lib/systemd/system/lanallowweb@.service
+sudo cp lanallowweb-failure@.service /lib/systemd/system/lanallowweb-failure@.service
 
 sudo /etc/init.d/rsyslog restart
 sudo /etc/init.d/cron reload

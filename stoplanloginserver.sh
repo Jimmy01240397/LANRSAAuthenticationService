@@ -41,12 +41,37 @@ fi
 workdir="/etc/lanloginserver"
 myip=`ip a | grep $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
 
-iptables -D INPUT -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
-iptables -D INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
-iptables -D INPUT -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -D FORWARD -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -D FORWARD -i $interface -m set --match-set lanallow src,src -j LOG --log-prefix "THIS IS IPTABLE LANRSA ALLOW"
-iptables -t nat -D PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set lanallow src,src -j DNAT --to $myip:443
+echo "interface=$interface" > /tmp/iptableslan${interface}down.sh
+echo "myip=$myip" >> /tmp/iptableslan${interface}down.sh
+
+table=""
+chain=""
+for a in $(seq 1 1 $(wc -l < $workdir/iptablessetuplist))
+do
+	nowa=$(sed -n ${a}p $workdir/iptablessetuplist | awk '$1=$1')
+        if [ "$nowa" != "" ]
+        then
+            case "$(echo "$nowa" | cut -c -1)" in
+				\*)
+					table="$(echo "$nowa" | cut -c 2-)"
+					;;
+				:)
+					chain="$(echo "$nowa" | cut -c 2-)"
+					;;
+				\#)
+					;;
+				*)
+					if [ "$table" != "" ] && [ "chain" != "" ]
+					then
+						echo "iptables -t $table -D $chain $nowa" >> /tmp/iptableslan${interface}down.sh
+					fi
+					;;
+			esac
+        fi
+done
+
+sudo sh /tmp/iptableslan${interface}down.sh
+rm /tmp/iptableslan${interface}down.sh
 ipset destroy lanallow
 
 > allowlist

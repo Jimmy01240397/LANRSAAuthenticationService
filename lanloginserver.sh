@@ -42,23 +42,42 @@ fi
 workdir="/etc/lanloginserver"
 myip=`ip a | grep $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
 
+echo "interface=$interface" > /tmp/iptableslan${interface}up.sh
+echo "myip=$myip" >> /tmp/iptableslan${interface}up.sh
+
+count=1
+table=""
+chain=""
+for a in $(seq 1 1 $(wc -l < $workdir/iptablessetuplist))
+do
+	nowa=$(sed -n ${a}p $workdir/iptablessetuplist | awk '$1=$1')
+        if [ "$nowa" != "" ]
+        then
+            case "$(echo "$nowa" | cut -c -1)" in
+				\*)
+					table="$(echo "$nowa" | cut -c 2-)"
+					count=1
+					;;
+				:)
+					chain="$(echo "$nowa" | cut -c 2-)"
+					count=1
+					;;
+				\#)
+					;;
+				*)
+					if [ "$table" != "" ] && [ "chain" != "" ]
+					then
+						echo "iptables -t $table -I $chain $count $nowa" >> /tmp/iptableslan${interface}up.sh
+						((count++))
+					fi
+					;;
+			esac
+        fi
+done
+
 ipset create lanallow hash:ip,mac
-iptables -I INPUT 1 -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
-iptables -I INPUT 2 -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
-iptables -I INPUT 3 -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -I FORWARD 1 -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -I FORWARD 2 -i $interface -m set --match-set lanallow src,src -j LOG --log-prefix "THIS IS IPTABLE LANRSA ALLOW"
-iptables -t nat -I PREROUTING 1 -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set lanallow src,src -j DNAT --to $myip:443
+sudo sh /tmp/iptableslan${interface}up.sh
+rm /tmp/iptableslan${interface}up.sh
 
 . ./venv/bin/activate
 python3 lanloginserver.py
-
-iptables -D INPUT -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
-iptables -D INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
-iptables -D INPUT -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -D FORWARD -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -D FORWARD -i $interface -m set --match-set lanallow src,src -j LOG --log-prefix "THIS IS IPTABLE LANRSA ALLOW"
-iptables -t nat -D PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set lanallow src,src -j DNAT --to $myip:443
-ipset destroy lanallow
-
-> allowlist
