@@ -10,6 +10,8 @@ It is a web site for router's LAN Network Authentication with RSA signature make
 
 Please make sure your server and client time is correct.
 
+***Warning!!! This program will install iptables and ipset, and it will change your firewall rules.***
+
 1. clone this repo and cd into LANRSAAuthenticationService.
 
 ```bash
