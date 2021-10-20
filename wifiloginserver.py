@@ -2,7 +2,7 @@ import os.path
 import os
 import glob
 
-import time
+from datetime import datetime
 
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
@@ -16,7 +16,10 @@ app = Flask(__name__)
 
 dir="/var/www/wifilogin/"
 
-print(time.strftime("%H:%M", time.localtime()))
+def gettime(formating):
+    return datetime.utcnow().strftime(formating)
+
+print(gettime("%H:%M"))
 
 signers = []
 for filename in glob.glob(os.path.join("allowkey", '*.pem')):
@@ -27,7 +30,7 @@ for filename in glob.glob(os.path.join("allowkey", '*.pem')):
 @app.route('/',methods=['GET'])
 def host():
     data = ""
-    digest = SHA.new(str(request.remote_addr + "," + str(time.strftime("%H", time.localtime()))).encode())
+    digest = SHA.new(str(request.remote_addr + "," + str(gettime("%H"))).encode())
     with open(dir + "index.html", "r", encoding='UTF-8') as f:
         data = f.read()
     resp = make_response(data)
@@ -41,8 +44,8 @@ def host2():
 
 @app.route('/login',methods=['POST'])
 def login():
-    data = str(time.strftime("%H:%M", time.localtime()))
-    digest = SHA.new(str(SHA.new(str(request.remote_addr + "," + str(time.strftime("%H", time.localtime()))).encode()).hexdigest() + "," + data).encode())
+    data = str(gettime("%H:%M"))
+    digest = SHA.new(str(SHA.new(str(request.remote_addr + "," + str(gettime("%H"))).encode()).hexdigest() + "," + data).encode())
 
     is_verify = False
     for signer in signers:
@@ -64,7 +67,7 @@ def login2():
 @app.route('/<path:path>',methods=['GET'])
 def hostpath(path):
     data = ""
-    digest = SHA.new(str(request.remote_addr + "," + str(time.strftime("%H", time.localtime()))).encode())
+    digest = SHA.new(str(request.remote_addr + "," + str(gettime("%H"))).encode())
     try:
         with open(dir + path, "r", encoding='UTF-8') as f:
             data = f.read()

@@ -31,7 +31,7 @@ cp key.key /etc/wifiloginserver/server.key
 5. make private and public key with addnewuserkey.sh.
 
 ```bash
-/etc/wifiloginserver/addnewuserkey.sh <username>
+/etc/wifiloginserver/addnewuserkey.sh -n <username>
 ```
 
 6. send your private key from /etc/wifiloginserver/private to your mobile.

@@ -16,7 +16,7 @@ do
 			echo "addnewuserkey.sh -n <userkeyname>"
 			exit 0
 			;;
-		-i)
+		-n)
 			shift
 			name=$1
 			;;
@@ -38,7 +38,10 @@ then
         exit 0
 fi
 
-sudo mkdir /etc/wifiloginserver/private 2> /dev/null
+if [ ! -d /etc/wifiloginserver/private ]
+then
+	sudo mkdir /etc/wifiloginserver/private
+fi
 
 sudo openssl genrsa -out /etc/wifiloginserver/private/$name.key 2048
 sudo openssl rsa -in /etc/wifiloginserver/private/$name.key -pubout -out /etc/wifiloginserver/allowkey/$name.pem

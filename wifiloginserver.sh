@@ -39,7 +39,7 @@ then
         exit 0
 fi
 
-myip=`ip a | grep wlan0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
+myip=`ip a | grep $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
 
 ipset create wifiallow hash:ip,mac
 iptables -A INPUT -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
@@ -47,7 +47,7 @@ iptables -A INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
 iptables -A INPUT -i $interface -m set ! --match-set wifiallow src,src -j DROP
 iptables -A FORWARD -i $interface -m set ! --match-set wifiallow src,src -j DROP
 iptables -A FORWARD -i $interface -m set --match-set wifiallow src,src -j LOG --log-prefix "THIS IS IPTABLE WLAN0!!!"
-iptables -A PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set wifiallow src,src -j DNAT --to $myip:443
+iptables -t nat -A PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set wifiallow src,src -j DNAT --to $myip:443
 
 . ./venv/bin/activate
 python3 wifiloginserver.py
@@ -57,5 +57,7 @@ iptables -D INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
 iptables -D INPUT -i $interface -m set ! --match-set wifiallow src,src -j DROP
 iptables -D FORWARD -i $interface -m set ! --match-set wifiallow src,src -j DROP
 iptables -D FORWARD -i $interface -m set --match-set wifiallow src,src -j LOG --log-prefix "THIS IS IPTABLE WLAN0!!!"
-iptables -D PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set wifiallow src,src -j DNAT --to $myip:443
+iptables -t nat -D PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set wifiallow src,src -j DNAT --to $myip:443
 ipset destroy wifiallow
+
+> allowlist

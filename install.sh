@@ -33,23 +33,31 @@ then
 	then
 		# Ubuntu
 		echo "Installing on Ubuntu pre 20.04 LTS."
+		set +e
 		sudo apt-get update
-		sudo apt-get install -y python3.7-venv python3.7-distutils
+		set -e
+		sudo apt-get install -y python3.7-venv python3.7-distutils python3.7-dev
 	elif [ "$UBUNTU" = "true" ] && [ "$UBUNTU_PRE_2004" = "0" ] && [ "$UBUNTU_2100" = "0" ]
 	then
 		echo "Installing on Ubuntu 20.04 LTS."
+		set +e
 		sudo apt-get update
-		sudo apt-get install -y python3.8-venv python3-distutils
+		set -e
+		sudo apt-get install -y python3.8-venv python3-distutils python3.8-dev
 	elif [ "$UBUNTU" = "true" ] && [ "$UBUNTU_2100" = "1" ]
 	then
 		echo "Installing on Ubuntu 21.04 or newer."
+		set +e
 		sudo apt-get update
-		sudo apt-get install -y python3.9-venv python3-distutils
+		set -e
+		sudo apt-get install -y python3.9-venv python3-distutils python3.9-dev
 	elif [ "$DEBIAN" = "true" ]
 	then
 		echo "Installing on Debian."
+		set +e
 		sudo apt-get update
-		sudo apt-get install -y python3-venv
+		set -e
+		sudo apt-get install -y python3-venv  python3-dev
 	else
 		echo "os not support"
 		exit 0
@@ -58,6 +66,8 @@ else
 	echo "os not support"
     exit 0
 fi
+
+sudo apt-get install -y gcc
 
 find_python() {
 	set +e
@@ -81,33 +91,51 @@ INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
 
 echo "Python version is $INSTALL_PYTHON_VERSION"
 
-
+set +e
 sudo mkdir /etc/wifiloginserver 2> /dev/null
 sudo mkdir /etc/wifiloginserver/allowkey 2> /dev/null
+set -e
 
-sudo cp -r {allowlist,addnewuserkey.sh,wifiallowlist.sh,wifiallowremove.sh,stopwifiloginserver.sh,wifiloginserver.sh,wifiloginserver.py} /etc/wifiloginserver/
-sudo chmod +x /etc/wifiloginserver/{addnewuserkey.sh,wifiallowlist.sh,wifiallowremove.sh,stopwifiloginserver.sh,wifiloginserver.sh}
+for filename in allowlist addnewuserkey.sh wifiallowlist.sh wifiallowremove.sh stopwifiloginserver.sh wifiloginserver.sh wifiloginserver.py requirements.txt
+do
+	sudo cp -r $filename /etc/wifiloginserver/
+done
+
+for filename in addnewuserkey.sh wifiallowlist.sh wifiallowremove.sh stopwifiloginserver.sh wifiloginserver.sh
+do
+	sudo chmod +x /etc/wifiloginserver/$filename
+done
 sudo cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/wifiloginserver/server.key
 sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/wifiloginserver/server.crt
 sudo cp iptableswlanlog.conf /etc/rsyslog.d/iptableswlanlog.conf
 sudo cp wifiallowweb@.service /lib/systemd/system/wifiallowweb@.service
 
-sudo mkdir /var
-sudo mkdir /var/www
-sudo mkdir /var/www/wifilogin
+sudo /etc/init.d/rsyslog restart
+
+set +e
+sudo mkdir /var 2> /dev/null
+sudo mkdir /var/www 2> /dev/null
+sudo mkdir /var/www/wifilogin 2> /dev/null
+set -e
 
 sudo cp -r wifilogin/* /var/www/wifilogin/
+
 
 cd /etc/wifiloginserver
 
 $INSTALL_PYTHON_PATH -m venv venv
 . ./venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install wheel
 python -m pip install -r requirements.txt
 deactivate
 
 
 sudo apt-get install -y iptables ipset
 
+echo ""
+echo ""
+echo "Wifi RSA Authentication Service install.sh complete."
 echo "please request your certificate from ca (or you can just use self signed certificate and put certificate to /etc/wifiloginserver/server.crt private to /etc/wifiloginserver/server.key ."
 echo "Then you can use systemctl start wifiallowweb@<wifiinterfacename>.service"
 echo "If you want to auto run on boot please type 'systemctl enable wifiallowweb@<wifiinterfacename>.service'"

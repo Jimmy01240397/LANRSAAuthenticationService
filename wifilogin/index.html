@@ -71,18 +71,11 @@
 
                 reader.onload = function(theFile) 
                 {
-                    //var re = /-----BEGIN OPENSSH PRIVATE KEY-----\n((.|\r|\n)*)\n-----END OPENSSH PRIVATE KEY-----/;
-                    var re = /-----BEGIN PRIVATE KEY-----\n((.|\r|\n)*)\n-----END PRIVATE KEY-----/;
+                    var re = /-----BEGIN (RSA PRIVATE|PRIVATE) KEY-----\n((.|\r|\n)*)\n-----END (RSA PRIVATE|PRIVATE) KEY-----/;
                     var prvKey = theFile.target.result.match(re)[0];
-                    //prvKey = prvKey.replaceAll('-----BEGIN OPENSSH PRIVATE KEY-----', '-----BEGIN PRIVATE KEY-----');
-                    //prvKey = prvKey.replaceAll('-----END OPENSSH PRIVATE KEY-----', '-----END PRIVATE KEY-----');
-
-                    //var prvKey = theFile.target.result;
-                    //console.log(prvKey);
-                    //var rs = require('jsrsasign');
 
                     var today=new Date();
-                    var nowtime = (today.getHours() < 10 ? '0' : '') + today.getHours() + ':' + (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
+                    var nowtime = (today.getUTCHours() < 10 ? '0' : '') + today.getUTCHours() + ':' + (today.getUTCMinutes() < 10 ? '0' : '') + today.getUTCMinutes();
 
 
                     var sig = new KJUR.crypto.Signature({alg: 'SHA1withRSA'});
@@ -93,7 +86,7 @@
                     //console.log(sigVal);
                 };
 
-                reader.readAsText(f);            
+                reader.readAsText(f);
             }
         </script>
     </head>
