@@ -92,36 +92,36 @@ INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
 echo "Python version is $INSTALL_PYTHON_VERSION"
 
 set +e
-sudo mkdir /etc/wifiloginserver 2> /dev/null
-sudo mkdir /etc/wifiloginserver/allowkey 2> /dev/null
+sudo mkdir /etc/lanloginserver 2> /dev/null
+sudo mkdir /etc/lanloginserver/allowkey 2> /dev/null
 set -e
 
-for filename in allowlist addnewuserkey.sh wifiallowlist.sh wifiallowremove.sh stopwifiloginserver.sh wifiloginserver.sh wifiloginserver.py requirements.txt
+for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py requirements.txt
 do
-	sudo cp -r $filename /etc/wifiloginserver/
+	sudo cp -r $filename /etc/lanloginserver/
 done
 
-for filename in addnewuserkey.sh wifiallowlist.sh wifiallowremove.sh stopwifiloginserver.sh wifiloginserver.sh
+for filename in addnewuserkey.sh lanallowlist.sh lanallowremove.sh stoplanloginserver.sh lanloginserver.sh
 do
-	sudo chmod +x /etc/wifiloginserver/$filename
+	sudo chmod +x /etc/lanloginserver/$filename
 done
-sudo cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/wifiloginserver/server.key
-sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/wifiloginserver/server.crt
+sudo cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/lanloginserver/server.key
+sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/lanloginserver/server.crt
 sudo cp iptableswlanlog.conf /etc/rsyslog.d/iptableswlanlog.conf
-sudo cp wifiallowweb@.service /lib/systemd/system/wifiallowweb@.service
+sudo cp lanallowweb@.service /lib/systemd/system/lanallowweb@.service
 
 sudo /etc/init.d/rsyslog restart
 
 set +e
 sudo mkdir /var 2> /dev/null
 sudo mkdir /var/www 2> /dev/null
-sudo mkdir /var/www/wifilogin 2> /dev/null
+sudo mkdir /var/www/lanlogin 2> /dev/null
 set -e
 
-sudo cp -r wifilogin/* /var/www/wifilogin/
+sudo cp -r lanlogin/* /var/www/lanlogin/
 
 
-cd /etc/wifiloginserver
+cd /etc/lanloginserver
 
 $INSTALL_PYTHON_PATH -m venv venv
 . ./venv/bin/activate
@@ -135,7 +135,7 @@ sudo apt-get install -y iptables ipset
 
 echo ""
 echo ""
-echo "Wifi RSA Authentication Service install.sh complete."
-echo "please request your certificate from ca (or you can just use self signed certificate and put certificate to /etc/wifiloginserver/server.crt private to /etc/wifiloginserver/server.key ."
-echo "Then you can use systemctl start wifiallowweb@<wifiinterfacename>.service"
-echo "If you want to auto run on boot please type 'systemctl enable wifiallowweb@<wifiinterfacename>.service'"
+echo "LAN RSA Authentication Service install.sh complete."
+echo "please request your certificate from ca (or you can just use self signed certificate and put certificate to /etc/lanloginserver/server.crt private to /etc/lanloginserver/server.key ."
+echo "Then you can use systemctl start lanallowweb@<laninterfacename>.service"
+echo "If you want to auto run on boot please type 'systemctl enable lanallowweb@<laninterfacename>.service'"

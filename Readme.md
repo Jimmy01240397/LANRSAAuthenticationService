@@ -1,6 +1,6 @@
-# WifiRSAAuthenticationService
+# LANRSAAuthenticationService
 
-It is a web site for Wifi Authentication with RSA signature make by Debian 11. Wifi hotspot is make by hostapt.
+It is a web site for router's LAN Network Authentication with RSA signature make by Debian 11. 
 
 ## Demo
 
@@ -10,11 +10,11 @@ It is a web site for Wifi Authentication with RSA signature make by Debian 11. W
 
 Please make sure your server and client time is correct.
 
-1. clone this repo and cd into WifiRSAAuthenticationService.
+1. clone this repo and cd into LANRSAAuthenticationService.
 
 ```bash
-git clone https://github.com/Jimmy01240397/WifiRSAAuthenticationService
-cd WifiRSAAuthenticationService
+git clone https://github.com/Jimmy01240397/LANRSAAuthenticationService
+cd LANRSAAuthenticationService
 ```
 
 2. run install.sh
@@ -24,28 +24,28 @@ sh install.sh
 ```
 
 3. request your certificate from ca (or you can just use self signed certificate
-4. put your server certificate and server private key in /etc/wifiloginserver name to server.crt and server.key
+4. put your server certificate and server private key in /etc/lanloginserver name to server.crt and server.key
 ```bash
-cp cert.crt /etc/wifiloginserver/server.crt
-cp key.key /etc/wifiloginserver/server.key
+cp cert.crt /etc/lanloginserver/server.crt
+cp key.key /etc/lanloginserver/server.key
 ```
 
 5. make private and public key with addnewuserkey.sh.
 
 ```bash
-/etc/wifiloginserver/addnewuserkey.sh -n <username>
+/etc/lanloginserver/addnewuserkey.sh -n <username>
 ```
 
-6. send your private key from /etc/wifiloginserver/private to your mobile.
+6. send your private key from /etc/lanloginserver/private to your mobile.
 
 7. enable and start your server
 
 ```bash
-systemctl enable wifiallowweb@<wifiinterfacename>.service
-systemctl start wifiallowweb@<wifiinterfacename>.service
+systemctl enable lanallowweb@<laninterfacename>.service
+systemctl start lanallowweb@<laninterfacename>.service
 
 #when you have add public key in allowkey remember to restart the server
-systemctl restart wifiallowweb@<wifiinterfacename>.service
+systemctl restart lanallowweb@<laninterfacename>.service
 ```
 
 ## Contributing

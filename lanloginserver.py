@@ -14,7 +14,7 @@ from flask import Flask,request,redirect,Response,make_response
 app = Flask(__name__)
 
 
-dir="/var/www/wifilogin/"
+dir="/var/www/lanlogin/"
 
 def gettime(formating):
     return datetime.utcnow().strftime(formating)
@@ -55,7 +55,7 @@ def login():
 
     if is_verify:
         mac = os.popen("arp | grep " + request.remote_addr + " | awk '{print $3}'").read().strip()
-        os.system("ipset add wifiallow " + request.remote_addr +"," + mac)
+        os.system("ipset add lanallow " + request.remote_addr +"," + mac)
         return """<style>.data {font-weight: bold;font-size: 500%;left: 0;width: 100%;top: 20%;}</style> <span class="data">success</span>"""
     else:
         return """<style>.data {font-weight: bold;font-size: 500%;left: 0;width: 100%;top: 20%;}</style> <span class="data">fail</span>"""

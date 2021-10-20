@@ -1,0 +1,12 @@
+[Unit]
+Description=Start LANAllowWeb for %I
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/lanloginserver
+ExecStart=/etc/lanloginserver/lanloginserver.sh -i %i
+ExecStop=/etc/lanloginserver/stoplanloginserver.sh -i %i
+
+
+[Install]
+WantedBy=multi-user.target

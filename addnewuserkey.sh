@@ -38,13 +38,15 @@ then
         exit 0
 fi
 
-if [ ! -d /etc/wifiloginserver/private ]
+workdir="/etc/lanloginserver"
+
+if [ ! -d $workdir/private ]
 then
-	sudo mkdir /etc/wifiloginserver/private
+	sudo mkdir $workdir/private
 fi
 
-sudo openssl genrsa -out /etc/wifiloginserver/private/$name.key 2048
-sudo openssl rsa -in /etc/wifiloginserver/private/$name.key -pubout -out /etc/wifiloginserver/allowkey/$name.pem
+sudo openssl genrsa -out $workdir/private/$name.key 2048
+sudo openssl rsa -in $workdir/private/$name.key -pubout -out $workdir/allowkey/$name.pem
 
-echo "Your private key is export to /etc/wifiloginserver/private/$name.key, please send your private key to your mobile."
+echo "Your private key is export to $workdir/private/$name.key, please send your private key to your mobile."
 echo "Please type 'systemctl restart wifiallowweb@<wifiinterfacename>.service' to restart your service."
