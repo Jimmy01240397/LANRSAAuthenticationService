@@ -43,12 +43,12 @@ workdir="/etc/lanloginserver"
 myip=`ip a | grep $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
 
 ipset create lanallow hash:ip,mac
-iptables -A INPUT -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
-iptables -A INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
-iptables -A INPUT -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -A FORWARD -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -A FORWARD -i $interface -m set --match-set lanallow src,src -j LOG --log-prefix "THIS IS IPTABLE LANRSA ALLOW!!!"
-iptables -t nat -A PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set lanallow src,src -j DNAT --to $myip:443
+iptables -I INPUT 1 -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
+iptables -I INPUT 2 -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
+iptables -I INPUT 3 -i $interface -m set ! --match-set lanallow src,src -j DROP
+iptables -I FORWARD 1 -i $interface -m set ! --match-set lanallow src,src -j DROP
+iptables -I FORWARD 2 -i $interface -m set --match-set lanallow src,src -j LOG --log-prefix "THIS IS IPTABLE LANRSA ALLOW!!!"
+iptables -t nat -I PREROUTING 1 -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set lanallow src,src -j DNAT --to $myip:443
 
 . ./venv/bin/activate
 python3 lanloginserver.py
