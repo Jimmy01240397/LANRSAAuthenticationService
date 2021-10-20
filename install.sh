@@ -107,7 +107,7 @@ do
 done
 sudo cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/lanloginserver/server.key
 sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/lanloginserver/server.crt
-sudo cp iptableswlanlog.conf /etc/rsyslog.d/iptableswlanlog.conf
+sudo cp iptableslanlog.conf /etc/rsyslog.d/iptableslanlog.conf
 sudo cp lanallowweb@.service /lib/systemd/system/lanallowweb@.service
 
 sudo /etc/init.d/rsyslog restart

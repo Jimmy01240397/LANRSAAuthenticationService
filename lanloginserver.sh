@@ -53,12 +53,3 @@ iptables -t nat -I PREROUTING 1 -i $interface -p tcp -m tcp -m multiport --dport
 . ./venv/bin/activate
 python3 lanloginserver.py
 
-iptables -D INPUT -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
-iptables -D INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
-iptables -D INPUT -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -D FORWARD -i $interface -m set ! --match-set lanallow src,src -j DROP
-iptables -D FORWARD -i $interface -m set --match-set lanallow src,src -j LOG --log-prefix "THIS IS IPTABLE LANRSA ALLOW!!!"
-iptables -t nat -D PREROUTING -i $interface -p tcp -m tcp -m multiport --dports 443 -m set ! --match-set lanallow src,src -j DNAT --to $myip:443
-ipset destroy lanallow
-
-> allowlist

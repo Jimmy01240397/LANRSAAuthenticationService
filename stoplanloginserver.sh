@@ -39,7 +39,7 @@ then
 fi
 
 workdir="/etc/lanloginserver"
-myip=`ip a | grep wlan0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
+myip=`ip a | grep $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
 
 iptables -D INPUT -i $interface -p tcp -m tcp -m multiport --dports 443 -j ACCEPT
 iptables -D INPUT -i $interface -p udp -m udp -m multiport --dports 53 -j ACCEPT
