@@ -48,9 +48,9 @@ echo "myip=$myip" >> /tmp/iptableslan${interface}up.sh
 count=1
 table=""
 chain=""
-for a in $(seq 1 1 $(wc -l < $workdir/iptablessetuplist))
+for a in $(seq 1 1 $(wc -l < $workdir/iptablessetuplist.conf))
 do
-	nowa=$(sed -n ${a}p $workdir/iptablessetuplist | awk '$1=$1')
+	nowa=$(sed -n ${a}p $workdir/iptablessetuplist.conf | awk '$1=$1')
         if [ "$nowa" != "" ]
         then
             case "$(echo "$nowa" | cut -c -1)" in

@@ -46,9 +46,9 @@ echo "myip=$myip" >> /tmp/iptableslan${interface}down.sh
 
 table=""
 chain=""
-for a in $(seq 1 1 $(wc -l < $workdir/iptablessetuplist))
+for a in $(seq 1 1 $(wc -l < $workdir/iptablessetuplist.conf))
 do
-	nowa=$(sed -n ${a}p $workdir/iptablessetuplist | awk '$1=$1')
+	nowa=$(sed -n ${a}p $workdir/iptablessetuplist.conf | awk '$1=$1')
         if [ "$nowa" != "" ]
         then
             case "$(echo "$nowa" | cut -c -1)" in
@@ -72,6 +72,9 @@ done
 
 sudo sh /tmp/iptableslan${interface}down.sh
 rm /tmp/iptableslan${interface}down.sh
+
+sleep 1
+
 ipset destroy lanallow
 
 > allowlist

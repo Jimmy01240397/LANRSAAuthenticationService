@@ -39,8 +39,8 @@ cp key.key /etc/lanloginserver/server.key
 ```
 
 6. send your private key from /etc/lanloginserver/private to your mobile.
-
-7. enable and start your server
+7. you can change your iptables rules on setup in /etc/lanloginserver/iptablessetuplist.conf
+8. enable and start your server
 
 ```bash
 systemctl enable lanallowweb@<laninterfacename>.service
