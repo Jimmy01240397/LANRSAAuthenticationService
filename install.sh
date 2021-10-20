@@ -139,6 +139,7 @@ sudo apt-get install -y iptables ipset
 echo ""
 echo ""
 echo "LAN RSA Authentication Service install.sh complete."
-echo "please request your certificate from ca (or you can just use self signed certificate and put certificate to /etc/lanloginserver/server.crt private to /etc/lanloginserver/server.key ."
+echo "please request your certificate from ca (or you can just use self signed certificate and put your server certificate and server private key in /etc/lanloginserver name to server.crt and server.key ."
+echo "make private and public key with 'addnewuserkey.sh -n <username>' and send your private key from /etc/lanloginserver/private to your mobile."
 echo "Then you can use systemctl start lanallowweb@<laninterfacename>.service"
 echo "If you want to auto run on boot please type 'systemctl enable lanallowweb@<laninterfacename>.service'"
