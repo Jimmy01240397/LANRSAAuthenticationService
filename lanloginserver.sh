@@ -62,6 +62,9 @@ do
 					chain="$(echo "$nowa" | cut -c 2-)"
 					count=1
 					;;
+				+)
+					count="$(echo "$nowa" | cut -c 2-)"
+					;;
 				\#)
 					;;
 				*)
