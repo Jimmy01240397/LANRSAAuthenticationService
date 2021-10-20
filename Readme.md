@@ -8,6 +8,8 @@ It is a web site for Wifi Authentication with RSA signature make by Debian 11. W
 
 ## Install
 
+Please make sure your server and client time is correct.
+
 1. clone this repo and cd into WifiRSAAuthenticationService.
 
 ```bash
