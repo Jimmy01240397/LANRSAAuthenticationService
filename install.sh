@@ -96,12 +96,12 @@ sudo mkdir /etc/lanloginserver 2> /dev/null
 sudo mkdir /etc/lanloginserver/allowkey 2> /dev/null
 set -e
 
-for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py requirements.txt iptablessetuplist
+for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py requirements.txt iptablessetuplist
 do
 	sudo cp -r $filename /etc/lanloginserver/
 done
 
-for filename in addnewuserkey.sh lanallowlist.sh lanallowremove.sh stoplanloginserver.sh lanloginserver.sh
+for filename in addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh
 do
 	sudo chmod +x /etc/lanloginserver/$filename
 done
