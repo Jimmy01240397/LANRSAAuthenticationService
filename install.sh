@@ -135,7 +135,7 @@ python -m pip install -r requirements.txt
 deactivate
 
 
-sudo apt-get install -y iptables ipset
+sudo apt-get install -y iptables ipset net-tools
 
 echo ""
 echo ""
