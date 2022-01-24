@@ -1,0 +1,3 @@
+Layer2auth: true
+Interfaces: 
+  - "eth0"

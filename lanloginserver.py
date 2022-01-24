@@ -1,6 +1,11 @@
 import os.path
 import os
 import glob
+import base64
+import yaml
+import ipaddress
+
+from doonloginandlogout import *
 
 from datetime import datetime
 
@@ -21,16 +26,33 @@ def gettime(formating):
 
 print(gettime("%H:%M"))
 
+with open('config.yaml', 'r') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+
 signers = []
+signernames = []
 for filename in glob.glob(os.path.join("allowkey", '*.pem')):
     with open(filename,'rb') as f:
         pubkey = RSA.importKey(f.read())
         signers.append(Signature_pkcs1_v1_5.new(pubkey))
+        signernames.append(filename.replace('allowkey/', '').replace('.pem', ''))
+
+def v6tov4(nowip):
+    ipdata = ipaddress.ip_address(nowip).exploded.split(":");
+    if len(ipdata) < 8:
+        return nowip
+    elif ipdata[:6] != ['0000', '0000', '0000', '0000', '0000', 'ffff']:
+        return nowip
+    return '.'.join(map(str,bytes.fromhex(ipdata[6]+ipdata[7])))
+
+def isv6(nowip):
+    ipdata = ipaddress.ip_address(nowip).exploded.split(":");
+    return len(ipdata) == 8
 
 @app.route('/',methods=['GET'])
 def host():
     data = ""
-    digest = SHA.new(str(request.remote_addr + "," + str(gettime("%H"))).encode())
+    digest = SHA.new(str(v6tov4(request.remote_addr) + "," + str(gettime("%H"))).encode())
     with open(dir + "index.html", "r", encoding='UTF-8') as f:
         data = f.read()
     resp = make_response(data)
@@ -45,17 +67,25 @@ def host2():
 @app.route('/login',methods=['POST'])
 def login():
     data = str(gettime("%H:%M"))
-    digest = SHA.new(str(SHA.new(str(request.remote_addr + "," + str(gettime("%H"))).encode()).hexdigest() + "," + data).encode())
+    digest = SHA.new(str(SHA.new(str(v6tov4(request.remote_addr) + "," + str(gettime("%H"))).encode()).hexdigest() + "," + data).encode())
 
     is_verify = False
+    cont = 0
     for signer in signers:
-        is_verify = signer.verify(digest, bytes.fromhex(request.form["sign"]))
+        is_verify = signer.verify(digest, base64.b64decode(request.form["sign"].encode("UTF-8")))
         if is_verify:
             break
+        cont += 1
 
     if is_verify:
-        mac = os.popen("arp | grep " + request.remote_addr + " | awk '{print $3}'").read().strip()
-        os.system("ipset add lanallow " + request.remote_addr +"," + mac)
+        run = "ipset add lanallow" + ("6 " if isv6(v6tov4(request.remote_addr)) else " ") + v6tov4(request.remote_addr)
+        mac = ""
+        if config['Layer2auth']:
+            mac = os.popen("ip neigh | grep " + v6tov4(request.remote_addr) + " | awk '{print $5}'").read().strip()
+            run+="," + mac
+        
+        doonlogin(signernames[cont], v6tov4(request.remote_addr), mac)
+        os.system(run)
         return """<style>.data {font-weight: bold;font-size: 500%;left: 0;width: 100%;top: 20%;}</style> <span class="data">success</span>"""
     else:
         return """<style>.data {font-weight: bold;font-size: 500%;left: 0;width: 100%;top: 20%;}</style> <span class="data">fail</span>"""
@@ -64,10 +94,22 @@ def login():
 def login2():
     return login()
 
+@app.route('/logout',methods=['GET'])
+def logout():
+    run = "ipset del lanallow" + ("6 " if isv6(v6tov4(request.remote_addr)) else " ") + v6tov4(request.remote_addr)
+    if config['Layer2auth']:
+        mac = os.popen("ip neigh | grep " + v6tov4(request.remote_addr) + " | awk '{print $5}'").read().strip()
+        run+="," + mac
+    
+    doonlogout(v6tov4(request.remote_addr), mac)
+    os.system(run)
+    return """<style>.data {font-weight: bold;font-size: 500%;left: 0;width: 100%;top: 20%;}</style> <span class="data">logout success</span>"""
+
+
 @app.route('/<path:path>',methods=['GET'])
 def hostpath(path):
     data = ""
-    digest = SHA.new(str(request.remote_addr + "," + str(gettime("%H"))).encode())
+    digest = SHA.new(str(v6tov4(request.remote_addr) + "," + str(gettime("%H"))).encode())
     try:
         with open(dir + path, "r", encoding='UTF-8') as f:
             data = f.read()

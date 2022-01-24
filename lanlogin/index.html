@@ -52,42 +52,49 @@
                 document.body.appendChild(form);    // Not entirely sure if this is necessary
                 form.submit();
             }
-	    function getCookie(name) {
-	        const value = `; ${document.cookie}`;
-	        const parts = value.split(`; ${name}=`);
-	        if (parts.length === 2) return parts.pop().split(';').shift();
-	    }
-	    function uploadFile()
-	    {
-                f = document.getElementById('input').files[0];
-		document.getElementById("getfiletext").innerText=f.name;
-		
-	    }
-            function startsign()
+			function getCookie(name) {
+				const value = `; ${document.cookie}`;
+				const parts = value.split(`; ${name}=`);
+				if (parts.length === 2) return parts.pop().split(';').shift();
+			}
+			function uploadFile()
+			{
+					f = document.getElementById('input').files[0];
+			document.getElementById("getfiletext").innerText=f.name;
+			
+			}
+			function hexToBase64(hexstring)
             {
-                f = document.getElementById('input').files[0];
-                //console.log(f);
-                var reader = new FileReader();
-
-                reader.onload = function(theFile) 
+                return btoa(hexstring.match(/\w{2}/g).map(function(a)
                 {
-                    var re = /-----BEGIN (RSA PRIVATE|PRIVATE) KEY-----\n((.|\r|\n)*)\n-----END (RSA PRIVATE|PRIVATE) KEY-----/;
-                    var prvKey = theFile.target.result.match(re)[0];
-
-                    var today=new Date();
-                    var nowtime = (today.getUTCHours() < 10 ? '0' : '') + today.getUTCHours() + ':' + (today.getUTCMinutes() < 10 ? '0' : '') + today.getUTCMinutes();
-
-
-                    var sig = new KJUR.crypto.Signature({alg: 'SHA1withRSA'});
-                    sig.init(prvKey);
-                    sig.updateString(getCookie('token') + ',' + nowtime);
-                    var sigVal = sig.sign();
-                    post_to_url('login', {'sign':sigVal});
-                    //console.log(sigVal);
-                };
-
-                reader.readAsText(f);
+                    return String.fromCharCode(parseInt(a, 16));
+                }).join(""));
             }
+			function startsign()
+			{
+				f = document.getElementById('input').files[0];
+				//console.log(f);
+				var reader = new FileReader();
+
+				reader.onload = function(theFile) 
+				{
+					var re = /-----BEGIN (RSA PRIVATE|PRIVATE) KEY-----\n((.|\r|\n)*)\n-----END (RSA PRIVATE|PRIVATE) KEY-----/;
+					var prvKey = theFile.target.result.match(re)[0];
+
+					var today=new Date();
+					var nowtime = (today.getUTCHours() < 10 ? '0' : '') + today.getUTCHours() + ':' + (today.getUTCMinutes() < 10 ? '0' : '') + today.getUTCMinutes();
+
+
+					var sig = new KJUR.crypto.Signature({alg: 'SHA1withRSA'});
+					sig.init(prvKey);
+					sig.updateString(getCookie('token') + ',' + nowtime);
+					var sigVal = sig.sign();
+					post_to_url('login', {'sign':hexToBase64(sigVal)});
+					//console.log(sigVal);
+				};
+
+				reader.readAsText(f);
+			}
         </script>
     </head>
     <body>

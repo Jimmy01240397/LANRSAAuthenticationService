@@ -51,4 +51,4 @@ sudo openssl rsa -in $workdir/private/$name.key -pubout -out $workdir/allowkey/$
 echo ""
 echo ""
 echo "Your private key is export to $workdir/private/$name.key, please send your private key to your mobile."
-echo "Please type 'systemctl restart wifiallowweb@<wifiinterfacename>.service' to restart your service."
+echo "Please type 'systemctl restart lanallowweb.service' to restart your service."

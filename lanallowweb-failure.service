@@ -1,0 +1,7 @@
+[Unit]
+Description=LANAllowWeb OnFailure
+
+[Service]
+Type=oneshot
+WorkingDirectory=/etc/lanloginserver
+ExecStart=/etc/lanloginserver/stoplanloginserver.sh

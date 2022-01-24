@@ -67,7 +67,7 @@ else
     exit 0
 fi
 
-sudo apt-get install -y gcc
+sudo apt-get install -y gcc wget
 
 find_python() {
 	set +e
@@ -91,17 +91,21 @@ INSTALL_PYTHON_PATH=python${INSTALL_PYTHON_VERSION:-3.7}
 
 echo "Python version is $INSTALL_PYTHON_VERSION"
 
+arch=$(dpkg --print-architecture)
+
+wget https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_${arch}.tar.gz -O - | tar xz && sudo mv yq_linux_${arch} /usr/bin/yq
+
 set +e
 sudo mkdir /etc/lanloginserver 2> /dev/null
 sudo mkdir /etc/lanloginserver/allowkey 2> /dev/null
 set -e
 
-for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py requirements.txt iptablessetuplist.conf
+for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py doonloginandlogout.py requirements.txt iptablessetuplist.conf iptablesstoplist.conf iptablescripthead.sh mkiptablesscript.sh config.yaml
 do
 	sudo cp -r $filename /etc/lanloginserver/
 done
 
-for filename in addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh
+for filename in addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh mkiptablesscript.sh
 do
 	sudo chmod +x /etc/lanloginserver/$filename
 done
@@ -109,8 +113,8 @@ sudo cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/lanloginserver/server.key
 sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/lanloginserver/server.crt
 sudo cp iptableslanlog.conf /etc/rsyslog.d/iptableslanlog.conf
 sudo cp iptableslancron /etc/cron.d/iptableslancron
-sudo cp lanallowweb@.service /lib/systemd/system/lanallowweb@.service
-sudo cp lanallowweb-failure@.service /lib/systemd/system/lanallowweb-failure@.service
+sudo cp lanallowweb.service /lib/systemd/system/lanallowweb.service
+sudo cp lanallowweb-failure.service /lib/systemd/system/lanallowweb-failure.service
 
 sudo /etc/init.d/rsyslog restart
 sudo /etc/init.d/cron reload
@@ -142,5 +146,6 @@ echo ""
 echo "LAN RSA Authentication Service install.sh complete."
 echo "please request your certificate from ca (or you can just use self signed certificate and put your server certificate and server private key in /etc/lanloginserver name to server.crt and server.key ."
 echo "make private and public key with 'addnewuserkey.sh -n <username>' and send your private key from /etc/lanloginserver/private to your mobile."
-echo "Then you can use systemctl start lanallowweb@<laninterfacename>.service"
-echo "If you want to auto run on boot please type 'systemctl enable lanallowweb@<laninterfacename>.service'"
+echo "Then you can use systemctl start lanallowweb.service"
+echo "If you want to auto run on boot please type 'systemctl enable lanallowweb.service'"
+echo "If you want change your LAN RSA Authentication iptables rule, please see /etc/lanloginserver/iptablessetuplist.conf and /etc/lanloginserver/iptablesstoplist.conf"

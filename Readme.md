@@ -19,14 +19,14 @@ git clone https://github.com/Jimmy01240397/LANRSAAuthenticationService
 cd LANRSAAuthenticationService
 ```
 
-2. run install.sh
+2. run ``install.sh``
 
 ```bash
 sh install.sh
 ```
 
-3. request your certificate from ca (or you can just use self signed certificate
-4. put your server certificate and server private key in /etc/lanloginserver name to server.crt and server.key
+3. request your certificate from ca (or you can just use self signed certificate.
+4. put your server certificate and server private key in ``/etc/lanloginserver`` name to ``server.crt`` and ``server.key``.
 ```bash
 cp cert.crt /etc/lanloginserver/server.crt
 cp key.key /etc/lanloginserver/server.key
@@ -38,16 +38,17 @@ cp key.key /etc/lanloginserver/server.key
 /etc/lanloginserver/addnewuserkey.sh -n <username>
 ```
 
-6. send your private key from /etc/lanloginserver/private to your mobile.
-7. you can change your iptables rules on setup in /etc/lanloginserver/iptablessetuplist.conf
-8. enable and start your server
+6. send your private key from ``/etc/lanloginserver/private`` to your mobile.
+7. change your interfaces in ``/etc/lanloginserver/config.yaml``.
+8. you can change your iptables rules on setup in ``/etc/lanloginserver/iptablessetuplist.conf`` and iptables rules on stop in ``/etc/lanloginserver/iptablesstoplist.conf``.
+9. enable and start your server
 
 ```bash
-systemctl enable lanallowweb@<laninterfacename>.service
-systemctl start lanallowweb@<laninterfacename>.service
+systemctl enable lanallowweb.service
+systemctl start lanallowweb.service
 
-#when you have add public key in allowkey remember to restart the server
-systemctl restart lanallowweb@<laninterfacename>.service
+#when you have add public key in allowkey or change config.yaml remember to restart the server
+systemctl restart lanallowweb.service
 ```
 
 ## Contributing

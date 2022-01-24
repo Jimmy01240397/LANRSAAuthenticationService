@@ -11,8 +11,14 @@ splitinspace()
 workdir="/etc/lanloginserver"
 
 sip=`echo "$1" | splitinspace | grep SRC | cut -c 5-`
-mac=`echo "$1" | splitinspace | grep MAC | cut -c 23-39 | tr [:lower:] [:upper:]`
-if [ "`grep $sip,$mac $workdir/allowlist`" == "" ]
+data="$sip"
+if [ "$(yq e '.Layer2auth' $workdir/config.yaml)" == "true" ]
 then
-	echo "$sip,$mac" >> $workdir/allowlist
+	mac=`echo "$1" | splitinspace | grep MAC | cut -c 23-39 | tr [:lower:] [:upper:]`
+	data="$sip,$mac"
+fi
+
+if [ "`grep $data $workdir/allowlist`" == "" ]
+then
+	echo "$data" >> $workdir/allowlist
 fi

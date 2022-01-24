@@ -1,86 +1,27 @@
 #!/bin/bash
 
-argnum=$#
-if [ $argnum -eq 0 ]
-then
-	echo "Missing arg..."
-	exit 0
-fi
-
-
-interface=""
-for a in $(seq 1 1 $argnum)
-do
-	nowarg=$1
-	case "$nowarg" in
-		-h)
-			echo "lanloginserver.sh -i <LANInterface>"
-			exit 0
-			;;
-		-i)
-			shift
-			interface=$1
-			;;
-		*)
-			if [ "$nowarg" = "" ]
-			then
-					break
-			fi
-			echo "bad arg..."
-			exit 0
-			;;
-	esac
-	shift
-done
-
-if [ "$interface" = "" ]
-then
-        echo "Missing arg..."
-        exit 0
-fi
-
 workdir="/etc/lanloginserver"
-myip=`ip a | grep $interface | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tail -n 1`
 
-echo "interface=$interface" > /tmp/iptableslan${interface}up.sh
-echo "myip=$myip" >> /tmp/iptableslan${interface}up.sh
+echo '#!/bin/bash' > /tmp/iptablesstopdown.sh
+echo '#!/bin/bash' > /tmp/iptablessetupup.sh
 
-count=1
-table=""
-chain=""
-for a in $(seq 1 1 $(wc -l < $workdir/iptablessetuplist.conf))
-do
-	nowa=$(sed -n ${a}p $workdir/iptablessetuplist.conf | awk '$1=$1')
-        if [ "$nowa" != "" ]
-        then
-            case "$(echo "$nowa" | cut -c -1)" in
-				\*)
-					table="$(echo "$nowa" | cut -c 2-)"
-					count=1
-					;;
-				:)
-					chain="$(echo "$nowa" | cut -c 2-)"
-					count=1
-					;;
-				+)
-					count="$(echo "$nowa" | cut -c 2-)"
-					;;
-				\#)
-					;;
-				*)
-					if [ "$table" != "" ] && [ "chain" != "" ]
-					then
-						echo "iptables -t $table -I $chain $count $nowa" >> /tmp/iptableslan${interface}up.sh
-						((count++))
-					fi
-					;;
-			esac
-        fi
-done
+bash $workdir/mkiptablesscript.sh down $workdir/iptablesstoplist.conf /tmp/iptablesstopdown.sh
+bash $workdir/mkiptablesscript.sh up $workdir/iptablessetuplist.conf /tmp/iptablessetupup.sh
 
-ipset create lanallow hash:ip,mac
-sudo sh /tmp/iptableslan${interface}up.sh
-rm /tmp/iptableslan${interface}up.sh
+authlayer="hash:ip"
+if [ "$(yq e '.Layer2auth' $workdir/config.yaml)" == "true" ]
+then
+	authlayer="hash:ip,mac"
+fi
+
+ipset create lanallow $authlayer
+ipset create lanallow6 $authlayer family inet6
+
+sudo sh /tmp/iptablesstopdown.sh
+sudo sh /tmp/iptablessetupup.sh
+rm /tmp/iptablesstopdown.sh
+rm /tmp/iptablessetupup.sh
 
 . ./venv/bin/activate
-python3 lanloginserver.py
+gunicorn --certfile=server.crt --keyfile=server.key --bind [::]:443 lanloginserver:app
+#python3 lanloginserver.py

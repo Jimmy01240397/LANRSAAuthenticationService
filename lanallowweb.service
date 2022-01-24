@@ -1,0 +1,13 @@
+[Unit]
+Description=Start LANAllowWeb
+After=network.target
+OnFailure=lanallowweb-failure.service
+
+[Service]
+WorkingDirectory=/etc/lanloginserver
+ExecStart=/etc/lanloginserver/lanloginserver.sh
+ExecStop=/etc/lanloginserver/stoplanloginserver.sh
+
+
+[Install]
+WantedBy=multi-user.target
