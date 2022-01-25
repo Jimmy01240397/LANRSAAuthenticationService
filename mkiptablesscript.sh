@@ -1,5 +1,6 @@
 #!/bin/bash
 
+argnum=$#
 if [ $argnum -lt 3 ]
 then
 	echo "mkiptablesscript.sh <up|down> <iptables conf file> <iptables script location>"
@@ -49,12 +50,13 @@ do
 			\#)
 				;;
 			*)
-				if [ "$table" != "" ] && [ "chain" != "" ]
+				if [ "$table" != "" ] && [ "$chain" != "" ]
 				then
 					if [ "$upordown" == "up" ]
 					then
 						echo "${ipv}tables -t $table -I $chain $count $nowa" >> $iptablescript
 					elif [ "$upordown" == "down" ]
+					then
 						echo "${ipv}tables -t $table -D $chain $nowa" >> $iptablescript
 					fi
 					((count++))

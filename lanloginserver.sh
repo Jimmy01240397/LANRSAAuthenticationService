@@ -2,9 +2,6 @@
 
 workdir="/etc/lanloginserver"
 
-echo '#!/bin/bash' > /tmp/iptablesstopdown.sh
-echo '#!/bin/bash' > /tmp/iptablessetupup.sh
-
 bash $workdir/mkiptablesscript.sh down $workdir/iptablesstoplist.conf /tmp/iptablesstopdown.sh
 bash $workdir/mkiptablesscript.sh up $workdir/iptablessetuplist.conf /tmp/iptablessetupup.sh
 
@@ -17,8 +14,8 @@ fi
 ipset create lanallow $authlayer
 ipset create lanallow6 $authlayer family inet6
 
-sudo sh /tmp/iptablesstopdown.sh
-sudo sh /tmp/iptablessetupup.sh
+sudo bash /tmp/iptablesstopdown.sh
+sudo bash /tmp/iptablessetupup.sh
 rm /tmp/iptablesstopdown.sh
 rm /tmp/iptablessetupup.sh
 
