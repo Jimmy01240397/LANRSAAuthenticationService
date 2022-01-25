@@ -1,3 +1,4 @@
 Layer2auth: true
+AllowAllIPAtSameMac: true
 Interfaces: 
   - "eth0"

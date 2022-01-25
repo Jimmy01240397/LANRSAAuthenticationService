@@ -67,7 +67,8 @@ def host2():
 @app.route('/login',methods=['POST'])
 def login():
     data = str(gettime("%H:%M"))
-    digest = SHA.new(str(SHA.new(str(v6tov4(request.remote_addr) + "," + str(gettime("%H"))).encode()).hexdigest() + "," + data).encode())
+    getip = v6tov4(request.remote_addr)
+    digest = SHA.new(str(SHA.new(str(getip + "," + str(gettime("%H"))).encode()).hexdigest() + "," + data).encode())
 
     is_verify = False
     cont = 0
@@ -78,13 +79,20 @@ def login():
         cont += 1
 
     if is_verify:
-        run = "ipset add lanallow" + ("6 " if isv6(v6tov4(request.remote_addr)) else " ") + v6tov4(request.remote_addr)
+        runfunc = lambda nowip : "ipset add lanallow" + ("6 " if isv6(nowip) else " ") + nowip
+        run = runfunc(getip)
         mac = ""
         if config['Layer2auth']:
-            mac = os.popen("ip neigh | grep " + v6tov4(request.remote_addr) + " | awk '{print $5}'").read().strip()
-            run+="," + mac
+            mac = os.popen("ip neigh | grep " + getip + " | awk '{print $5}'").read().strip()
+            if config['AllowAllIPAtSameMac']:
+                getip = list(map(str.strip, os.popen("ip neigh | grep " + mac + " | awk '{print $1}'").read().split()))
+                run = ""
+                for thisip in getip:
+                    run+= runfunc(thisip) "," + mac + ";"
+            else:
+                run+="," + mac
         
-        doonlogin(signernames[cont], v6tov4(request.remote_addr), mac)
+        doonlogin(signernames[cont], getip, mac)
         os.system(run)
         return """<style>.data {font-weight: bold;font-size: 500%;left: 0;width: 100%;top: 20%;}</style> <span class="data">success</span>"""
     else:
@@ -96,12 +104,20 @@ def login2():
 
 @app.route('/logout',methods=['GET'])
 def logout():
-    run = "ipset del lanallow" + ("6 " if isv6(v6tov4(request.remote_addr)) else " ") + v6tov4(request.remote_addr)
+    getip = v6tov4(request.remote_addr)
+    runfunc = lambda nowip : "ipset del lanallow" + ("6 " if isv6(nowip) else " ") + nowip
+    run = runfunc(getip)
     if config['Layer2auth']:
-        mac = os.popen("ip neigh | grep " + v6tov4(request.remote_addr) + " | awk '{print $5}'").read().strip()
-        run+="," + mac
+        mac = os.popen("ip neigh | grep " + getip + " | awk '{print $5}'").read().strip()
+        if config['AllowAllIPAtSameMac']:
+            getip = list(map(str.strip, os.popen("ip neigh | grep " + mac + " | awk '{print $1}'").read().split()))
+            run = ""
+            for thisip in getip:
+                run+= runfunc(thisip) "," + mac + ";"
+        else:
+            run+="," + mac
     
-    doonlogout(v6tov4(request.remote_addr), mac)
+    doonlogout(getip, mac)
     os.system(run)
     return """<style>.data {font-weight: bold;font-size: 500%;left: 0;width: 100%;top: 20%;}</style> <span class="data">logout success</span>"""
 
