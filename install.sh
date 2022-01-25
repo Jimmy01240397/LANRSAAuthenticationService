@@ -109,8 +109,6 @@ for filename in addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanlogi
 do
 	sudo chmod +x /etc/lanloginserver/$filename
 done
-sudo cp /etc/ssl/private/ssl-cert-snakeoil.key /etc/lanloginserver/server.key
-sudo cp /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/lanloginserver/server.crt
 sudo cp iptableslanlog.conf /etc/rsyslog.d/iptableslanlog.conf
 sudo cp iptableslancron /etc/cron.d/iptableslancron
 sudo cp lanallowweb.service /lib/systemd/system/lanallowweb.service
@@ -130,6 +128,11 @@ sudo cp -r lanlogin/* /var/www/lanlogin/
 
 
 cd /etc/lanloginserver
+
+if [ ! -f server.key ] && [ ! -f server.crt ]
+then
+	sudo openssl req -x509 -new -nodes -days 3650 -newkey 2048 -keyout server.key -out server.crt -subj "/CN=$(hostname)"
+fi
 
 $INSTALL_PYTHON_PATH -m venv venv
 . ./venv/bin/activate
