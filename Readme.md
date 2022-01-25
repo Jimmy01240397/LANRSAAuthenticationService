@@ -51,6 +51,24 @@ systemctl start lanallowweb.service
 systemctl restart lanallowweb.service
 ```
 
+## Remove
+1. cd into LANRSAAuthenticationService and run remove.sh
+```
+cd LANRSAAuthenticationService
+sh remove.sh
+```
+
+2. Yor certificate, private key and user public key will move to LANRSAAuthenticationService.
+```
+$ ls server.crt server.key allowkey private
+server.crt server.key
+
+allowkey:
+
+private:
+
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

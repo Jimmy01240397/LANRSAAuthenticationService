@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo systemctl stop lanallowweb.service
+
 set -e
 UBUNTU=false
 DEBIAN=false
@@ -100,9 +102,17 @@ sudo mkdir /etc/lanloginserver 2> /dev/null
 sudo mkdir /etc/lanloginserver/allowkey 2> /dev/null
 set -e
 
-for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py doonloginandlogout.py requirements.txt iptablessetuplist.conf iptablesstoplist.conf iptablescripthead.sh mkiptablesscript.sh config.yaml
+for filename in allowlist addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh lanloginserver.py iptablescripthead.sh mkiptablesscript.sh requirements.txt
 do
 	sudo cp -r $filename /etc/lanloginserver/
+done
+
+for filename in doonloginandlogout.py iptablessetuplist.conf iptablesstoplist.conf config.yaml
+do
+	if [ ! -f /etc/lanloginserver/$filename ]
+	then
+		sudo cp -r $filename /etc/lanloginserver/
+	fi
 done
 
 for filename in addnewuserkey.sh lanallowlist.sh lanallowremove.sh updatelanloginiptables.sh stoplanloginserver.sh lanloginserver.sh mkiptablesscript.sh
