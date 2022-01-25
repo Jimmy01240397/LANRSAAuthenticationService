@@ -88,7 +88,7 @@ def login():
                 getip = list(map(str.strip, os.popen("ip neigh | grep " + mac + " | awk '{print $1}'").read().split()))
                 run = ""
                 for thisip in getip:
-                    run+= runfunc(thisip) "," + mac + ";"
+                    run+= runfunc(thisip) + "," + mac + ";"
             else:
                 run+="," + mac
         
@@ -113,7 +113,7 @@ def logout():
             getip = list(map(str.strip, os.popen("ip neigh | grep " + mac + " | awk '{print $1}'").read().split()))
             run = ""
             for thisip in getip:
-                run+= runfunc(thisip) "," + mac + ";"
+                run+= runfunc(thisip) + "," + mac + ";"
         else:
             run+="," + mac
     
