@@ -1,5 +1,5 @@
 Layer2auth: true
 AllowAllIPAtSameMac: true
-port: 443
+Port: 443
 Interfaces: 
   - "eth0"
