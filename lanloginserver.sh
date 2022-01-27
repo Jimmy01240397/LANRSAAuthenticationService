@@ -11,6 +11,12 @@ then
 	authlayer="hash:ip,mac"
 fi
 
+port=443
+if [ "$(yq e '.Port' $workdir/config.yaml)" != "null" ]
+then
+	port=$(yq e '.Port' $workdir/config.yaml)
+fi
+
 ipset create lanallow $authlayer
 ipset create lanallow6 $authlayer family inet6
 
@@ -20,5 +26,5 @@ rm /tmp/iptablesstopdown.sh
 rm /tmp/iptablessetupup.sh
 
 . ./venv/bin/activate
-gunicorn --certfile=server.crt --keyfile=server.key --bind [::]:443 lanloginserver:app
+gunicorn --certfile=server.crt --keyfile=server.key --bind [::]:$port lanloginserver:app
 #python3 lanloginserver.py
