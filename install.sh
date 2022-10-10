@@ -152,7 +152,7 @@ python -m pip install -r requirements.txt
 deactivate
 
 
-sudo apt-get install -y iptables ipset net-tools
+sudo apt-get install -y iptables ipset net-tools ipcalc
 
 echo ""
 echo ""
