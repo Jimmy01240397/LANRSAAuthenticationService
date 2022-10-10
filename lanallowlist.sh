@@ -10,7 +10,7 @@ splitinspace()
 
 workdir="/etc/lanloginserver"
 
-sip=`echo "$1" | splitinspace | grep SRC | cut -c 5-`
+sip=$(ipcalc $(echo "$1" | splitinspace | grep SRC | cut -c 5-) | grep Address: | awk '{print $2}')
 data="$sip"
 if [ "$(yq e '.Layer2auth' $workdir/config.yaml)" == "true" ]
 then
